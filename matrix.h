@@ -5,14 +5,9 @@
 typedef enum _MatrixState {
 	MATRIX_BUSY=0,
 	MATRIX_FREE
-} MatrixState; 
+} MatrixState;
 
-typedef struct {
-	int iRows;
-	int iCols;
-	int **iMatrix;
-	MatrixState bState;
-} matrix_t;
+typedef struct matrix matrix_t;
 
 
 /**
