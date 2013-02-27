@@ -31,28 +31,32 @@
 #include <unistd.h>
 #include "matrix.h"
 
-// Info about the row
-typedef struct {
-    int iRowNo;        // Row number
-    Node *pFirstNode;  // First Node of the row
-    RowInfo *pNextRow; // Next Row
-} RowInfo;
-
-// Info about the column
-typedef struct {
-    int iColNo;        // Col number
-    Node *pFirstNode;  // First node of the column
-    ColInfo *pNextCol; // Next column
-} ColInfo;
+typedef struct _Node Node;
+typedef struct _RowInfo RowInfo;
+typedef struct _ColInfo ColInfo;
 
 // A node should contain info about its position (row X col), the value (here: int), and the next elements (right/down)
-typedef struct {
+struct _Node {
     int iRow;
     int iCol;
     int iData; // or we can use generic data...
     Node *pNextRight;
     Node *pNextDown;
-} Node;
+};
+
+// Info about the row
+struct _RowInfo {
+    int iRowNo;        // Row number
+    Node *pFirstNode;  // First Node of the row
+    RowInfo *pNextRow; // Next Row
+};
+
+// Info about the column
+struct _ColInfo {
+    int iColNo;        // Col number
+    Node *pFirstNode;  // First node of the column
+    ColInfo *pNextCol; // Next column
+};
 
 // info about the matrix: the first row, the first col and their numbers
 struct matrix {
