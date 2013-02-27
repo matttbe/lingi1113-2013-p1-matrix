@@ -114,13 +114,42 @@ void matrix_free (matrix_t *m)
 {
 	IF_ERROR (m, __func__);
 
-	for (int i = 0 ; i < m->iRows ; i++)
-		free (m->iMatrix[i]); // each columns
+	// we need to free each ColInfo, RowInfo, (data), Node, matrix
 
-	free (m->iMatrix); // the row
+	if (m->pFirstCol)
+	{
+		ColInfo *pCol = m->pFirstCol, *pCurrCol;
+		while (pCol != NULL) // each columns
+		{
+			pCurrCol = pCol;
+			pCol = pCurrCol->pNextCol;
+			free (pCurrCol);
+		}
+	}
+	if (m->pFirstRow)
+	{
+		RowInfo *pRow = m->pFirstRow, *pCurrRow;
+		Node *pNode, *pCurrNode;
+		while (pRow != NULL) // each rows
+		{
+			pCurrRow = pRow;
+			pRow = pCurrRow->pNextRow;
+			pNode = pCurrRow->pFirstNode;
+			while (pNode != NULL) // each elems
+			{
+				pCurrNode = pNode;
+				pNode = pCurrNode->pNextRight;
+				free (pCurrNode);
+				// no free data
+			}
+			free (pCurrRow);
+		}
+	}
+
 	free (m); // the structure
 }
 
+///TODO: if val = 0, return; --> if it's only used to add result (and not to modify some of them)
 void matrix_set (matrix_t *m, int i, int j, int val)
 {
 	IF_ERROR (m, __func__);
@@ -130,12 +159,48 @@ void matrix_set (matrix_t *m, int i, int j, int val)
 	m->iMatrix[i][j] = val;
 }
 
-int matrix_get (matrix_t *m, int i, int j)
+/**
+ * Return the right node or NULL if error
+ */
+static Node * _get_right_node_from_row (RowInfo *pRow, int iCol)
+{
+	Node *pNode = pRow->pFirstNode;
+	while (pNode != NULL)
+	{
+		if (pNode->iCol > iCol)
+			return NULL; // "error"
+
+		if (pNode->iCol == iCol)
+			return pNode; // right node
+
+		pNode = pNode->pNextRight; // next
+	}
+	return NULL; // "error"
+}
+
+int matrix_get (matrix_t *m, int iRow, int iCol)
 {
 	IF_ERROR (m, __func__);
-		// maybe useless to check each time... maybe safer but it's just used by us...
 
-	return m->iMatrix[i][j];
+	RowInfo *pRow = m->pFirstRow;
+	while (pRow != NULL)
+	{
+		if (pRow->iRowNo > iRow) // no node on this row: "error"
+			break;
+
+		if (pRow->iRowNo == iRow) // the right row
+		{
+			Node *pNode = _get_right_node_from_row (pRow, iCol);
+			if (pNode)
+				return pNode->iData;
+			break; // "error", no right node
+		}
+
+		pRow = pRow->pNextRow;
+	}
+	
+	// the element doen't exist, it's 0...
+	return 0;
 }
 
 void matrix_set_state (matrix_t *m, MatrixState state)
@@ -156,14 +221,46 @@ void matrix_print (matrix_t *m)
 {
 	IF_ERROR (m, __func__);
 
-	int i, j;
-	for (i = 0 ; i < m->iRows ; i++)
+	int iRow, iCol;
+	RowInfo *pRow = m->pFirstRow;
+	Node *pNode;
+	for (iRow = 1 ; iRow <= m->iNbRows ; iRow++) // each rows, we start from 1 -> NbRows
 	{
-		for (j = 0 ; j < m->iCols ; j++)
-			printf ("%d ", m->iMatrix[i][j]);
+		if (pRow && pRow->iRowNo == iRow) // this row exists
+		{
+			pNode = pRow->pFirstNode;
+			pRow = pRow->pNextRow;
+		}
+		else
+			pNode = NULL;
+
+		for (iCol = 1 ; iCol <= m->iNbCols ; iCol++) // each col
+		{
+			if (pNode && pNode->iCol == iCol) // this elem exists
+			{
+				printf ("%d ", pNode->iData);
+				pNode = pNode->pNextRight;
+			}
+			else
+				printf ("0 ");
+		}
 		printf ("\n");
 	}
-	//printf ("\n");
+}
+
+static Node * _get_right_node_in_col_from_node (Node *pNode, int iRow)
+{
+	while (pNode != NULL)
+	{
+		if (pNode->iRow > iRow)
+			return NULL; // "error"
+
+		if (pNode->iRow == iRow)
+			return pNode; // right node
+
+		pNode = pNode->pNextDown; // next
+	}
+	return NULL; // "error"
 }
 
 matrix_t * matrix_product (matrix_t *m1, matrix_t *m2)
@@ -171,22 +268,40 @@ matrix_t * matrix_product (matrix_t *m1, matrix_t *m2)
 	IF_ERROR (m1, __func__);
 	IF_ERROR (m2, __func__);
 
-	// TODO test limits?
+	///TODO test if we can do the product?
 
-	int i, j, k;
-	matrix_t *pMatrixResult = matrix_alloc (m1->iRows, m2->iCols);
+	matrix_t *pMatrixResult = matrix_alloc (m1->iNbRows, m2->iNbCols);
 
 	if (! pMatrixResult)
 		return NULL; // TODO: error? What do we do?
 
-	for (i = 0 ; i < pMatrixResult->iRows ; i++) 
+	RowInfo *pRowM1 = m1->pFirstRow;
+	ColInfo *pColM2;
+	Node *pNodeM1, *pNodeM2, *pNode;
+	int iResult;
+	while (pRowM1 != NULL) // each row
 	{
-		for (j = 0 ; j < pMatrixResult->iCols ; j++) 
+		pColM2 = m2->pFirstCol;
+		while (pColM2 != NULL) // each col
 		{
-			pMatrixResult->iMatrix[i][j] = 0;
-			for (k = 0 ; k < m1->iCols ; k++)
-				pMatrixResult->iMatrix[i][j] += m1->iMatrix[i][k] * m2->iMatrix[k][j];
+			iResult = 0;
+			pNodeM2 = pColM2->pFirstNode;
+			pNodeM1 = pRowM1->pFirstNode;
+			while (pNodeM1 != NULL) // each node of the row
+			{
+				pNode = _get_right_node_in_col_from_node (pNodeM2, pRowM1->iRowNo);
+				if (pNode) // can compute
+				{
+					pNodeM2 = pNode;
+					iResult += pNodeM1->iData * pNodeM2->iData;
+				}
+
+				pNodeM1 = pNodeM1->pNextRight;
+			}
+			matrix_set (pMatrixResult, pRowM1->iRowNo, pColM2->iColNo, iResult);
 		}
+
+		pRowM1 = pRowM1->pNextRow;
 	}
 
 	return pMatrixResult;
