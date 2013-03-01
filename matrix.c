@@ -174,12 +174,12 @@ void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 
 	while (pRow != NULL)
 	{
-		if (pRow->iRowNo < iRow)
+		if (pRow->iRowNo < iRow) // let's continue
 		{
 			pPrevRow = pRow;
 			pRow = pRow->pNextRow;
 		}
-		if (pRow->iRowNo > iRow) // no row
+		else if (pRow->iRowNo > iRow) // no row
 		{
 			pNextRow = pRow; // we need to know what's the next row
 			break;
@@ -229,7 +229,7 @@ void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 		}
 
 		pRow->pFirstNode = pNewNode;
-		pRow->pNextRow = pRow;
+		pRow->pNextRow = pNextRow;
 		pRow->iRowNo = iRow;
 
 		// check previous row
@@ -251,7 +251,7 @@ void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 			pPrevCol = pCol;
 			pCol = pCol->pNextCol;
 		}
-		if (pCol->iColNo > iCol) // no Col
+		else if (pCol->iColNo > iCol) // no Col
 		{
 			pNextCol = pCol; // we need to know what's the next Col
 			break;
@@ -300,7 +300,7 @@ void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 		}
 
 		pCol->pFirstNode = pNewNode;
-		pCol->pNextCol = pCol;
+		pCol->pNextCol = pNextCol;
 		pCol->iColNo = iCol;
 
 		// check previous Col
@@ -441,13 +441,14 @@ matrix_t * matrix_product (matrix_t *m1, matrix_t *m2)
 				pNode = _get_right_node_in_col_from_node (pNodeM2, pRowM1->iRowNo);
 				if (pNode) // can compute
 				{
-					pNodeM2 = pNode;
-					iResult += pNodeM1->iData * pNodeM2->iData;
+					pNodeM2 = pNode->pNextDown; // next time, we can search from this node
+					iResult += pNodeM1->iData * pNode->iData;
 				}
 
 				pNodeM1 = pNodeM1->pNextRight;
 			}
 			matrix_set (pMatrixResult, pRowM1->iRowNo, pColM2->iColNo, iResult);
+			pColM2 = pColM2->pNextCol;
 		}
 
 		pRowM1 = pRowM1->pNextRow;
