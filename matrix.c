@@ -84,12 +84,12 @@ matrix_t * matrix_alloc (int iNbRows, int iNbCols)
 	IF_ERROR_ALLOC (pMatrix);
 
 	// set the numbers of rows and columns
-	pmatrix->iNbRows = iNbRows;
-	pmatrix->iNbCols = iNbCols;
+	pMatrix->iNbRows = iNbRows;
+	pMatrix->iNbCols = iNbCols;
 
 	// set the columns and rows to null, new matrix consdered as empty
-	pmatrix->pFirstRow = NULL;
-	pmatrix->pFirstCol = NULL;
+	pMatrix->pFirstRow = NULL;
+	pMatrix->pFirstCol = NULL;
 
 	// set de state of the matrix
 	pMatrix->bState = MATRIX_BUSY;	// busy by default
@@ -136,7 +136,7 @@ void matrix_free (matrix_t *m)
 }
 
 ///TODO: if val = 0, return; --> if it's only used to add result (and not to modify some of them)
-void matrix_set (matrix_t *m, int i, int j, int val)
+void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 {
 	IF_ERROR (m);
 
@@ -219,6 +219,7 @@ void matrix_set (matrix_t *m, int i, int j, int val)
 
 	m->iMatrix[i][j] = val;
       }
+}
 
 /**
  * Return the right node or NULL if error
