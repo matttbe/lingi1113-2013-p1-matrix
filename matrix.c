@@ -67,13 +67,13 @@ struct matrix {
     MatrixState bState;
 } ;
 
-#define IF_ERROR_WITH_MSG(_pMatrix, _sentence, _message) do {\
-	if (! _pMatrix) {\
+#define IF_ERROR_WITH_MSG(_cond, _sentence, _message) do {\
+	if (_cond) {\
 		fprintf (stderr, _sentence, _message);\
 		exit (EXIT_FAILURE); }} while (0)
 
-#define IF_ERROR(_pMatrix) IF_ERROR_WITH_MSG (_pMatrix, "ERROR: attempting to reach a non allocated matrix in function: %s\n", __func__)
-#define IF_ERROR_ALLOC(_pMatrix) IF_ERROR_WITH_MSG (_pMatrix, "ERROR: when trying to allocate the memory for the matrix: %s\n", __func__)
+#define IF_ERROR_MATRIX(_pMatrix) IF_ERROR_WITH_MSG (! _pMatrix, "ERROR: attempting to reach a non allocated matrix in function: %s\n", __func__)
+#define IF_ERROR_ALLOC(_pMatrix) IF_ERROR_WITH_MSG (! _pMatrix, "ERROR: when trying to allocate the memory for the matrix (%s)\n", __func__)
 
 
 matrix_t * matrix_alloc (int iNbRows, int iNbCols)
@@ -100,7 +100,7 @@ matrix_t * matrix_alloc (int iNbRows, int iNbCols)
 // we need to free each ColInfo, RowInfo, (data), Node, matrix
 void matrix_free (matrix_t *m)
 {
-	IF_ERROR (m);
+	IF_ERROR_MATRIX (m);
 
 	if (m->pFirstCol)
 	{
@@ -138,7 +138,9 @@ void matrix_free (matrix_t *m)
 ///TODO: if val = 0, return; --> if it's only used to add result (and not to modify some of them)
 void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 {
-	IF_ERROR (m);
+	IF_ERROR_MATRIX (m);
+
+	IF_ERROR_WITH_MSG (iRow > m->iNbRows || iCol > m->iNbCols, "ERROR: attempting to set a value outsite of the matrix (%s)\n", __func__);
 
   if (i > m->iNbRows || j > m->iNbCols){
     //erreur, on sort des bornes
@@ -213,7 +215,7 @@ void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 		 
 	
 	
-	IF_ERROR (m);
+	IF_ERROR_MATRIX (m);
 	// TODO: error? What do we do? + check limit matrix?
 	// maybe useless to check each time... maybe safer but it's just used by us...
 
@@ -242,7 +244,7 @@ static Node * _get_right_node_from_row (RowInfo *pRow, int iCol)
 
 int matrix_get (matrix_t *m, int iRow, int iCol)
 {
-	IF_ERROR (m);
+	IF_ERROR_MATRIX (m);
 
 	RowInfo *pRow = m->pFirstRow;
 	while (pRow != NULL)
@@ -267,21 +269,21 @@ int matrix_get (matrix_t *m, int iRow, int iCol)
 
 void matrix_set_state (matrix_t *m, MatrixState state)
 {
-	IF_ERROR (m);
+	IF_ERROR_MATRIX (m);
 
 	m->bState = state;
 }
 
 MatrixState matrix_get_state (matrix_t *m)
 {
-	IF_ERROR (m);
+	IF_ERROR_MATRIX (m);
 
 	return m->bState;
 }
 
 void matrix_print (matrix_t *m)
 {
-	IF_ERROR (m);
+	IF_ERROR_MATRIX (m);
 
 	int iRow, iCol;
 	RowInfo *pRow = m->pFirstRow;
@@ -327,8 +329,8 @@ static Node * _get_right_node_in_col_from_node (Node *pNode, int iRow)
 
 matrix_t * matrix_product (matrix_t *m1, matrix_t *m2)
 {
-	IF_ERROR (m1);
-	IF_ERROR (m2);
+	IF_ERROR_MATRIX (m1);
+	IF_ERROR_MATRIX (m2);
 
 	///TODO test if we can do the product?
 
