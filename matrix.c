@@ -224,20 +224,19 @@ void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 }
 
 /**
- * Return the right node or NULL if error
+ * Return the right node or NULL if "error"
  */
 static Node * _get_right_node_from_row (RowInfo *pRow, int iCol)
 {
 	Node *pNode = pRow->pFirstNode;
 	while (pNode != NULL)
 	{
-		if (pNode->iCol > iCol)
+		if (pNode->iCol < iCol)
+			pNode = pNode->pNextRight; // next
+		else if (pNode->iCol > iCol)
 			return NULL; // "error"
-
-		if (pNode->iCol == iCol)
+		else /*if (pNode->iCol == iCol)*/
 			return pNode; // right node
-
-		pNode = pNode->pNextRight; // next
 	}
 	return NULL; // "error"
 }
@@ -249,20 +248,18 @@ int matrix_get (matrix_t *m, int iRow, int iCol)
 	RowInfo *pRow = m->pFirstRow;
 	while (pRow != NULL)
 	{
-		if (pRow->iRowNo > iRow) // no node on this row: "error"
+		if (pRow->iRowNo < iRow)
+			pRow = pRow->pNextRow;
+		else if (pRow->iRowNo > iRow) // no node on this row: "error"
 			break;
-
-		if (pRow->iRowNo == iRow) // the right row
+		else /*if (pRow->iRowNo == iRow)*/ // the right row
 		{
 			Node *pNode = _get_right_node_from_row (pRow, iCol);
 			if (pNode)
 				return pNode->iData;
 			break; // "error", no right node
 		}
-
-		pRow = pRow->pNextRow;
 	}
-	
 	// the element doen't exist, it's 0...
 	return 0;
 }
@@ -316,13 +313,12 @@ static Node * _get_right_node_in_col_from_node (Node *pNode, int iRow)
 {
 	while (pNode != NULL)
 	{
-		if (pNode->iRow > iRow)
+		if (pNode->iRow < iRow)
+			pNode = pNode->pNextDown; // next
+		else if (pNode->iRow > iRow)
 			return NULL; // "error"
-
-		if (pNode->iRow == iRow)
+		else /*if (pNode->iRow == iRow)*/
 			return pNode; // right node
-
-		pNode = pNode->pNextDown; // next
 	}
 	return NULL; // "error"
 }
