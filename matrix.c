@@ -374,7 +374,7 @@ void matrix_print (matrix_t *m)
 	int iRow, iCol;
 	RowInfo *pRow = m->pFirstRow;
 	Node *pNode;
-	for (iRow = 1 ; iRow <= m->iNbRows ; iRow++) // each rows, we start from 1 -> NbRows
+	for (iRow = 0 ; iRow < m->iNbRows ; iRow++) // each rows, we start from 1 -> NbRows
 	{
 		if (pRow && pRow->iRowNo == iRow) // this row exists
 		{
@@ -384,7 +384,7 @@ void matrix_print (matrix_t *m)
 		else
 			pNode = NULL;
 
-		for (iCol = 1 ; iCol <= m->iNbCols ; iCol++) // each col
+		for (iCol = 0 ; iCol < m->iNbCols ; iCol++) // each col
 		{
 			if (pNode && pNode->iCol == iCol) // this elem exists
 			{

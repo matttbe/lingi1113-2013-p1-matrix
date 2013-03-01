@@ -50,12 +50,12 @@ matrix_t * matrix_alloc (int iNbRows, int iNbCols);
 void matrix_free (matrix_t *m);
 
 /**
- * Set the value val in m at [iRow][iCol], the first element is in 1x1.
+ * Set the value val in m at [iRow][iCol], the first element is in 0x0.
  */
 void matrix_set (matrix_t *m, int iRow, int iCol, int iData);
 
 /**
- * Get the value in m at [iRow][iCol], the first element is in 1x1.
+ * Get the value in m at [iRow][iCol], the first element is in 0x0.
  */
 int matrix_get (matrix_t *m, int iRow, int iCol);
 
