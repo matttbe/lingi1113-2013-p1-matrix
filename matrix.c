@@ -439,7 +439,7 @@ matrix_t * matrix_product (matrix_t *m1, matrix_t *m2)
 			pNodeM1 = pRowM1->pFirstNode;
 			while (pNodeM1 != NULL) // each node of the row
 			{
-				pNode = _get_right_node_in_col_from_node (pNodeM2, pRowM1->iRowNo);
+				pNode = _get_right_node_in_col_from_node (pNodeM2, pNodeM1->iCol); // node from the col where row = the column of the other node
 				if (pNode) // can compute
 				{
 					pNodeM2 = pNode->pNextDown; // next time, we can search from this node
