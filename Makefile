@@ -1,7 +1,7 @@
 CC= gcc
 #CC= clang
-# -Werror # -pg
-CFLAGS= -Wall -std=c99 -lpthread
+# -Werror # -pg # -ggdb
+CFLAGS= -Wall -std=c99 -lpthread -ggdb
 OUT= matrixprod
 FILE= main.c
 FILES= matrix.o DLinkedList.o consumer.o producer.o matrix_reader.o
