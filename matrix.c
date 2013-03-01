@@ -135,93 +135,182 @@ void matrix_free (matrix_t *m)
 	free (m); // the structure
 }
 
-///TODO: if val = 0, return; --> if it's only used to add result (and not to modify some of them)
 void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 {
 	IF_ERROR_MATRIX (m);
 
-	IF_ERROR_WITH_MSG (iRow > m->iNbRows || iCol > m->iNbCols, "ERROR: attempting to set a value outsite of the matrix (%s)\n", __func__);
+	if (iData == 0) // this function is only used to set new value and we don't want to add 0 in sparse matrix
+		return;
 
-  if (i > m->iNbRows || j > m->iNbCols){
-    //erreur, on sort des bornes
-  }
-	
-  // cas ou pas encore de ligne implique pas encore de colone non plus
-  if (m->pFirstRow == NULL) {
-		
-    RowInfo *pNewRow = (RowInfo*) malloc (sizeof (RowInfo));
-    ColInfo *pNewCol = (ColInfo*) malloc (sizeof (ColInfo));
-    Node *pNewNode = (Node*) malloc (sizeof (Node));
-		
-    // test si les mallocs se sont bien passes
-    if (!pNewRow || !pNewCol || !pNewNode){
-      fprintf (stderr, "ERROR: when trying to allocate the memory for the new node\n");
-      if (pNewRow){free(pNewRow);}
-      if (pNewCol){free(pNewCol);}
-      if (pNewNode){free(pNewNode);}
+	IF_ERROR_WITH_MSG (iRow > m->iNbRows || iCol > m->iNbCols, "ERROR: attempting to set a value outside of the matrix (%s)\n", __func__);
 
-    }else{
+	/* differents cases: we have to create a new node
+	 * (the previous node should not exist):
+	 *  - no row/col exists:
+	 *    - create 1 row and col
+	 *    - add node
+	 *    - we need to modify matrix_t
+	 *  - the specific row/col doesn't exist:
+	 *    - create row/col
+	 *    - add node
+	 *    - check if we need to modify matrix_t
+	 *  - the row/col exists:
+	 *    - check if the node exist (should not exist...)
+	 *    - add the node on the right place
+	 *    - check if we need to modify row/col struct
+	 */
 
-      m->pFirstRow = pNewRow;
-      m->pFirstCol = pNewCol;
-	  
-      pNewRow->iRowNo = i;
-      pNewRow->pFirstNode = pNewNode;
-      pNewRow->pNewRow = NULL;
+	// new node
+	Node *pNewNode = (Node*) malloc (sizeof (Node));
+	IF_ERROR_ALLOC (pNewNode);
 
-      pNewCol->iColNo = j;
-      pNewCol->pFirstNode = pNewNode;
-      pNewCol->pNewCol = NULL;
-			
-      pNewNode->iRow = i;
-      pNewNode->iCol = j;
-      pNewNode->iData = val;
-      pNewNode->pNextRight = NULL;
-      pNewNode->pNextDown = NULL;		
+	pNewNode->iRow = iRow;
+	pNewNode->iCol = iCol;
+	pNewNode->iData = iData;
 
-    }
+	// ____________ ROW
+	RowInfo *pRow = m->pFirstRow, *pPrevRow = NULL, *pNextRow = NULL;
+	Node *pNode, *pPrevNode;
 
-  }else{
-    
-    RowInfo *tempRow;
-    ColInfo *tempCol;
+	while (pRow != NULL)
+	{
+		if (pRow->iRowNo < iRow)
+		{
+			pPrevRow = pRow;
+			pRow = pRow->pNextRow;
+		}
+		if (pRow->iRowNo > iRow) // no row
+		{
+			pNextRow = pRow; // we need to know what's the next row
+			break;
+		}
+		else /*if (pRow->iRowNo == iRow)*/ // the row exists 
+		{
+			pPrevNode = NULL;
+			pNode = pRow->pFirstNode; // != NULL
+			while (pNode != NULL)
+			{
+				if (pNode->iCol < iCol)
+				{
+					pPrevNode = pNode;
+					pNode = pNode->pNextRight;
+				}
+				else if (pNode->iCol > iCol)
+					break; // We know the next and the previous node
+				else /*if (pNode->iCol == iCol)*/
+				{
+					printf ("WARNING: This node (%dx%d) already exists\n", iRow, iCol);
+					free (pNewNode); // free the new allocated node
+					pNode->iData = iData;
+					return; // no need to have a look to the columns
+				}
+			}
+			// previous node
+			if (pPrevNode == NULL) // we added the first node
+				pRow->pFirstNode = pNewNode;
+			else
+				pPrevNode->pNextRight = pNewNode;
 
-    if (m->pFirstRow->iRowNo > i){
-      
-    
-    
-  }
-		
-	
-	
-	
-    RowInfo rowpres = NULL;
-    RowInfo row = m->pFirstRow;
-    ColInfo colpres = NULL;
-    ColInfo col = m->pFirstCol;
-	
-    int iterpres = 0;
-    int iternew = row->iRowNo;
-    bool end = false;
-    while (iternew < i && iternew <= m->iNbRows && !end){
-      iterpres = iternew;
-      rowpres = row;
-      if (rowpres->pNextRow == NULL
-	  iternew = rowpres->iRowNo;
-	  row = rowpres->pNextRow;
-	  }
-      if (! iternew == i) { // row doesn't exist	
-		
-		 
-	
-	
-	IF_ERROR_MATRIX (m);
-	// TODO: error? What do we do? + check limit matrix?
-	// maybe useless to check each time... maybe safer but it's just used by us...
+			// next node
+			pNewNode->pNextRight = pNode;
+			break;
+		}
+	}
 
-	m->iMatrix[i][j] = val;
-      }
+	if (pRow == NULL || pNextRow != NULL) // we need a new row
+	{
+		RowInfo *pRow = (RowInfo*) malloc (sizeof (RowInfo));
+		if (! pRow)
+		{
+			fprintf (stderr, "ERROR: when trying to allocate a new RowInfo\n");
+			free (pNewNode);
+			return;
+			// exit (EXIT_FAILURE);
+		}
+
+		pRow->pFirstNode = pNewNode;
+		pRow->pNextRow = pRow;
+		pRow->iRowNo = iRow;
+
+		// check previous row
+		if (pPrevRow == NULL) // add the first row
+			m->pFirstRow = pRow;
+		else
+			pPrevRow->pNextRow = pRow;
+	}
+	// else (if the row already exists )// already done in pRow->iRowNo == iRow
+
+
+	//__________ COLUMN
+	ColInfo *pCol = m->pFirstCol, *pPrevCol = NULL, *pNextCol = NULL;
+
+	while (pCol != NULL)
+	{
+		if (pCol->iColNo < iCol)
+		{
+			pPrevCol = pCol;
+			pCol = pCol->pNextCol;
+		}
+		if (pCol->iColNo > iCol) // no Col
+		{
+			pNextCol = pCol; // we need to know what's the next Col
+			break;
+		}
+		else /*if (pCol->iColNo == iCol)*/ // the Col exists 
+		{
+			pPrevNode = NULL;
+			pNode = pCol->pFirstNode; // != NULL
+			while (pNode != NULL)
+			{
+				if (pNode->iRow < iRow)
+				{
+					pPrevNode = pNode;
+					pNode = pNode->pNextDown;
+				}
+				else if (pNode->iRow > iRow)
+					break; // We know the next and the previous node
+				else /*if (pNode->iRow == iRow)*/
+				{
+					fprintf (stderr, "ERROR: This node (%dx%d) already exists\n", iRow, iCol);
+					// if we are here, it means there is a bug somewhere...
+					exit (EXIT_FAILURE); // no need to do something more...
+				}
+			}
+			// previous node
+			if (pPrevNode == NULL) // we added the first node
+				pCol->pFirstNode = pNewNode;
+			else
+				pPrevNode->pNextDown = pNewNode;
+
+			// next node
+			pNewNode->pNextDown = pNode;
+			break;
+		}
+	}
+
+	if (pCol == NULL || pNextCol != NULL) // we need a new Col
+	{
+		ColInfo *pCol = (ColInfo*) malloc (sizeof (ColInfo));
+		if (! pCol)
+		{
+			fprintf (stderr, "ERROR: when trying to allocate a new ColInfo\n");
+			free (pNewNode);
+			free (pRow);
+			return; // exit (EXIT_FAILURE);
+		}
+
+		pCol->pFirstNode = pNewNode;
+		pCol->pNextCol = pCol;
+		pCol->iColNo = iCol;
+
+		// check previous Col
+		if (pPrevCol == NULL) // add the first Col
+			m->pFirstCol = pCol;
+		else
+			pPrevCol->pNextCol = pCol;
+	}
 }
+
 
 /**
  * Return the right node or NULL if "error"
