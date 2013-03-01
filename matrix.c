@@ -417,7 +417,8 @@ matrix_t * matrix_product (matrix_t *m1, matrix_t *m2)
 	IF_ERROR_MATRIX (m1);
 	IF_ERROR_MATRIX (m2);
 
-	///TODO test if we can do the product?
+	// test if we can do the product?
+	IF_ERROR_WITH_MSG (m1->iNbCols != m2->iNbRows, "ERROR: trying to do a product with 2 incompatibles matrix (%s)\n", __func__);
 
 	matrix_t *pMatrixResult = matrix_alloc (m1->iNbRows, m2->iNbCols);
 
