@@ -37,34 +37,34 @@ typedef struct _ColInfo ColInfo;
 
 // A node should contain info about its position (row X col), the value (here: int), and the next elements (right/down)
 struct _Node {
-    int iRow;
-    int iCol;
-    int iData; // or we can use generic data...
-    Node *pNextRight;
-    Node *pNextDown;
+	int iRow;
+	int iCol;
+	int iData; // or we can use generic data...
+	Node *pNextRight;
+	Node *pNextDown;
 };
 
 // Info about the row
 struct _RowInfo {
-    int iRowNo;        // Row number
-    Node *pFirstNode;  // First Node of the row
-    RowInfo *pNextRow; // Next Row
+	int iRowNo;        // Row number
+	Node *pFirstNode;  // First Node of the row
+	RowInfo *pNextRow; // Next Row
 };
 
 // Info about the column
 struct _ColInfo {
-    int iColNo;        // Col number
-    Node *pFirstNode;  // First node of the column
-    ColInfo *pNextCol; // Next column
+	int iColNo;        // Col number
+	Node *pFirstNode;  // First node of the column
+	ColInfo *pNextCol; // Next column
 };
 
 // info about the matrix: the first row, the first col and their numbers
 struct matrix {
-    int iNbRows;
-    int iNbCols;
-    RowInfo *pFirstRow;
-    ColInfo *pFirstCol;
-    MatrixState bState;
+	int iNbRows;
+	int iNbCols;
+	RowInfo *pFirstRow;
+	ColInfo *pFirstCol;
+	MatrixState bState;
 } ;
 
 #define IF_ERROR_WITH_MSG(_cond, _sentence, _message) do {\
