@@ -42,7 +42,7 @@ typedef struct matrix matrix_t;
 /**
  * allocate the right memory
  */
-matrix_t * matrix_alloc (int rows, int columns);
+matrix_t * matrix_alloc (int iNbRows, int iNbCols)
 
 /**
  * free the allocated memory

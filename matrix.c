@@ -73,36 +73,35 @@ struct matrix {
 		exit (EXIT_FAILURE); }} while (0)
 
 
-matrix_t * matrix_alloc (int rows, int columns)
+matrix_t * matrix_alloc (int iNbRows, int iNbCols)
 {
-  // the structure
-  matrix_t *pMatrix = (matrix_t*) malloc (sizeof (matrix_t));
-  if (! pMatrix)
-    {
-      fprintf (stderr, "ERROR: when trying to allocate the memory for the matrix\n");
-      return NULL;
-    }
-	
-  // set the numbers of rows and columns
-  pmatrix->iNbRows = rows;
-  pmatrix->inbCols = columns;
-	
-  // set the columns and rows to null, new matrix consdered as empty
-  pmatrix->pFirstRow = NULL;
-  pmatrix->pFirstCol = NULL;
-	
-  // set de state of the matrix
-  pMatrix->bState = MATRIX_BUSY; // busy par défaut
+	// the structure
+	matrix_t *pMatrix = (matrix_t *) malloc (sizeof (matrix_t));
 
-  return pMatrix;
+	if (!pMatrix)
+	{
+		fprintf (stderr,
+			 "ERROR: when trying to allocate the memory for the matrix\n");
+		exit (EXIT_FAILURE);
+	}
+	// set the numbers of rows and columns
+	pmatrix->iNbRows = iNbRows;
+	pmatrix->iNbCols = iNbCols;
+
+	// set the columns and rows to null, new matrix consdered as empty
+	pmatrix->pFirstRow = NULL;
+	pmatrix->pFirstCol = NULL;
+
+	// set de state of the matrix
+	pMatrix->bState = MATRIX_BUSY;	// busy by default
+
+	return pMatrix;
 }
 
+// we need to free each ColInfo, RowInfo, (data), Node, matrix
 void matrix_free (matrix_t *m)
 {
-			
 	IF_ERROR (m, __func__);
-
-	// we need to free each ColInfo, RowInfo, (data), Node, matrix
 
 	if (m->pFirstCol)
 	{
@@ -123,12 +122,12 @@ void matrix_free (matrix_t *m)
 			pCurrRow = pRow;
 			pRow = pCurrRow->pNextRow;
 			pNode = pCurrRow->pFirstNode;
-			while (pNode != NULL) // each elems
+			while (pNode != NULL) // each node
 			{
 				pCurrNode = pNode;
 				pNode = pCurrNode->pNextRight;
 				free (pCurrNode);
-				// no free data
+				// no need to free data here
 			}
 			free (pCurrRow);
 		}
