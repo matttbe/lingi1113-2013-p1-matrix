@@ -52,7 +52,7 @@ void matrix_free (matrix_t *m);
 /**
  * Set the value val in m at [iRow][iCol], the first element is in 1x1.
  */
-void matrix_set (matrix_t *m, int iRow, int iCol, int val);
+void matrix_set (matrix_t *m, int iRow, int iCol, int iData);
 
 /**
  * Get the value in m at [iRow][iCol], the first element is in 1x1.
