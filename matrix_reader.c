@@ -42,7 +42,7 @@ matrix_reader_next(matrix_reader_t *r)
 	
 	for (i = 0; i < n_lines; ++i) {
 		for (j = 0; j < n_columns; ++j) {
-			if (fscanf(r->f, "%d", &val) == EOF) {
+			if (fscanf(r->f, "%d", &val) == EOF) { // if error
 				matrix_free(m);
 				return NULL;
 			}
