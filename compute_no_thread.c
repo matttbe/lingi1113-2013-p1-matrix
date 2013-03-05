@@ -26,6 +26,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 // matrix
 #include "matrix_reader.h"
 #include "matrix.h"
@@ -42,10 +43,16 @@ matrix_t * compute_all_matrix_in_one_thread (matrix_reader_t* pReader)
 
 	pPrevMatrix = matrix_reader_next (pReader);
 	if (! pPrevMatrix)
-		return NULL;
+	{
+		fprintf (stderr, "No matrix\n");
+		exit (EXIT_FAILURE);
+	}
 	pNextMatrix = matrix_reader_next (pReader);
 	if (! pNextMatrix)
-		return NULL;
+	{
+		fprintf (stderr, "No enough matrix (only one)\n");
+		exit (EXIT_FAILURE);
+	}
 
 	while (pNextMatrix != NULL)
 	{
