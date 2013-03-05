@@ -50,6 +50,7 @@ matrix_t * compute_all_matrix_in_one_thread (matrix_reader_t* pReader)
 	pNextMatrix = matrix_reader_next (pReader);
 	if (! pNextMatrix)
 	{
+		free (pPrevMatrix);
 		fprintf (stderr, "No enough matrix (only one)\n");
 		exit (EXIT_FAILURE);
 	}

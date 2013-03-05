@@ -78,15 +78,15 @@ int main (int argc, char *argv[])
 	if (! g_pReader) // wrong file
 		exit (EXIT_FAILURE);
 
-	g_pListHead = dllist_init ();
-	if (! g_pListHead)
-	{
-		fprintf (stderr, "Error! Can't initialised the list\n");
-		exit (EXIT_FAILURE);
-	}
-
 	if (iThread > 1)
 	{
+		g_pListHead = dllist_init ();
+		if (! g_pListHead)
+		{
+			fprintf (stderr, "Error! Can't initialised the list\n");
+			exit (EXIT_FAILURE);
+		}
+
 		err = pthread_mutex_init (&g_aMutexConsumer, NULL);
 		IF_ERROR ("Mutex init Consumer")
 		err = pthread_mutex_init (&g_aMutexConsumerEnd, NULL);
