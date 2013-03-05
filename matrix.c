@@ -200,6 +200,7 @@ void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 				else /*if (pNode->iCol == iCol)*/
 				{
 					printf ("WARNING: This node (%dx%d) already exists\n", iRow, iCol);
+					matrix_print (m);
 					free (pNewNode); // free the new allocated node
 					pNode->iData = iData;
 					return; // no need to have a look to the columns
@@ -231,6 +232,8 @@ void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 		pRow->pFirstNode = pNewNode;
 		pRow->pNextRow = pNextRow;
 		pRow->iRowNo = iRow;
+
+		pNewNode->pNextRight = NULL;
 
 		// check previous row
 		if (pPrevRow == NULL) // add the first row
@@ -272,6 +275,7 @@ void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 				else /*if (pNode->iRow == iRow)*/
 				{
 					fprintf (stderr, "ERROR: This node (%dx%d) already exists\n", iRow, iCol);
+					matrix_print (m);
 					// if we are here, it means there is a bug somewhere...
 					exit (EXIT_FAILURE); // no need to do something more...
 				}
@@ -302,6 +306,8 @@ void matrix_set (matrix_t *m, int iRow, int iCol, int iData)
 		pCol->pFirstNode = pNewNode;
 		pCol->pNextCol = pNextCol;
 		pCol->iColNo = iCol;
+
+		pNewNode->pNextDown = NULL;
 
 		// check previous Col
 		if (pPrevCol == NULL) // add the first Col
