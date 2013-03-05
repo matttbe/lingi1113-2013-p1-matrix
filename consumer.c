@@ -51,9 +51,11 @@ void *consumer (void *arg)
 			pthread_exit (NULL);
 
 		//_________ Search matrix
+		/////////////// LOCK T5
 		err = pthread_mutex_lock (&g_aMutexConsumerCritical); // this mutex protects the first part of the job of consumer (read data)
 		IF_ERROR ("pthread_mutex_lock consummer critical")
 
+		/////////////// LOCK T3
 		err = sem_wait (&g_aEmpty); // a nodes' pair is available 
 		IF_ERROR ("sem_wait empty")
 		
