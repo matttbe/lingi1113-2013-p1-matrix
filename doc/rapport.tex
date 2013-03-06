@@ -11,6 +11,7 @@
     \urlstyle{sf}
 \usepackage[usenames]{color}
 \usepackage{array}
+\usepackage{varioref}
 %\usepackage{etex} % chimie
 %\usepackage{m-pictex} % chimie
 %\usepackage{m-ch-en} % chimie
@@ -47,55 +48,115 @@
 \begin{document}
 \maketitle
 % \tableofcontents
-
 \section{Performances du programme}
 Afin de comparer les performances de notre programme avec une implémentation triviale de matrices pleines (avec un tableau à deux dimensions), nous fournissons avec notre code les deux implémentations. Le premier se trouve dans \texttt{matrix.c} et le deuxième dans \texttt{matrix\_plain.c}. Concernant les exécutables, lors de l'utilisation de la commande \texttt{make}, deux binaires seront produits: \texttt{matrixprod} et \texttt{matrixprod\_plain}.
-
 \subsection{Mesures réalisées}
-Voici plusieurs mesures réalisées avec plusieurs matrices allant de 90 à 100 éléments par colonnes et lignes. Dans ces tableaux, nous retrouvons à chaque fois, dans la première colonne, le temps d'exécution pour l'implémentation des matrices creuses et dans la seconde, celle pour les matrices pleines.
+Voici plusieurs mesures réalisées avec plusieurs matrices allant de 90 à 100 éléments par colonnes et lignes. Dans ces tableaux, nous retrouvons à chaque fois, dans la première colonne, le nombre de matrices à multiplier et dans la seconde, le temps mis pour faire l'entièreté des multiplications. 
+\begin{table}[H]
+    \caption{Pleine}
+    \label{tab:10}
+    \begin{center}
+        \begin{tabular}{cc}
+             nbr matrix & temps (s)\\
+            \hline
+            2 &        0.015 \\
 
+    3 &        0.016 \\
+
+    4 &        0.027 \\
+
+    5 &        0.020 \\
+
+    10 &        0.043\\
+
+    15 &        0.066 \\
+
+    20 &        0.098 \\
+
+        \end{tabular}
+    \end{center}
+\end{table}
 \begin{table}[H]
     \caption{Creuses à environ 90\%}
     \label{tab:10}
     \begin{center}
         \begin{tabular}{cc}
-             & \\
-             & \\
+             nbr matrix & temps (s)\\
+            \hline
+            2 &        0.012 \\
+
+    3 &        0.030 \\
+
+    4 &        0.031 \\
+
+    5 &        0.049 \\
+
+    10 &        0.103\\
+
+    15 &        0.160 \\
+
+    20 &        0.220 \\
+
         \end{tabular}
     \end{center}
 \end{table}
-
 \begin{table}[H]
     \caption{Creuses à environ 95\%}
     \label{tab:}
     \begin{center}
         \begin{tabular}{cc}
-             & \\
-             & \\
+              nbr matrix & temps (s)\\
+            \hline
+            2 &        0.000\\
+
+    3 &        0.012\\
+
+    4 &        0.020\\
+
+    5 &        0.028\\
+
+    10 &        0.092\\
+
+    15 &        0.148\\
+
+    20 &        0.188\\
+
         \end{tabular}
     \end{center}
 \end{table}
-
 \begin{table}[H]
     \caption{Creuses à environ 99\%}
     \label{tab:}
     \begin{center}
         \begin{tabular}{cc}
-             & \\
-             & \\
+            nbr matrix & temps (s)\\
+            \hline
+             2 &         0.000\\
+
+    3 &           0.004\\
+
+    4 &        0.004\\
+
+    5 &       0.004\\
+
+    10 &         0.008\\
+
+    15 &         0.008 \\
+
+    20 &         0.016\\
+
         \end{tabular}
     \end{center}
 \end{table}
-
 \begin{figure}[H]
     \begin{center}
-        %\includegraphics{}
+        \includegraphics[width=\textwidth]{matrixgraph.png}
         \caption{Représentation graphique des données venant des 3 tableaux précédents}
         \label{fig:time}
     \end{center}
 \end{figure}
 La représentation graphique se trouve dans la figure \ref{fig:time}.
-
+Pour des matrices de tailles variant de 3000 à 3500,  l'implémentation en matrice creuse met environ 4 fois moins de temps que l'implémentation en matrice pleine pour la multiplication de deux matrices: 1.324s pour l'implémentation creuse et 4.940s pour l'implémentation pleine.
 \section{Utilité de l'implémentation de matrices creuses}
-
+Comme on peut le voir avec les données des tableaux précédents et surtout du graphe \ref{fig:time}, \vpageref{fig:time}, plus les matrices sont creuses, plus notre implémentation devient intéressante. Ceci est tout a fait logique puisque la structure utilisée est beaucoup plus complexe et importante dans notre implémentation comparé à un simple tableau en deux dimensions. Quand il y a peu d'informations dans la matrice (imaginons une matrice diagonale), notre implémentation devient très intéressante car il n'y aura que des calculs avec les éléments existants : si deux matrices de 1000x1000 ne contiennent qu'un seul élément, seuls ces deux éléments seront consultés. La place en mémoire sera également intéressantes dans ce cas de très grandes matrices.
 \end{document}
