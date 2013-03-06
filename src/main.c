@@ -36,11 +36,13 @@ int main (int argc, char *argv[])
 	int opt;
 	int err = 0;
 	const char* cFilename;
+	const char* cOutputFileName = NULL;
 	matrix_t *pMatrix;
+	FILE *pOutputFile;
 
 
 	int i = 0;
-	while ((opt = getopt (argc, argv, "hn:")) != -1)
+	while ((opt = getopt (argc, argv, "hn:o:")) != -1)
 	{
 		switch (opt)
 		{
@@ -55,6 +57,9 @@ int main (int argc, char *argv[])
 					iThread = 1;
 				}
 				i++;
+				break;
+			case 'o':
+				cOutputFileName = optarg;
 				break;
 			case '?':
 				fprintf (stderr, "Error! No such option: '%c'\n", optopt);
@@ -77,6 +82,17 @@ int main (int argc, char *argv[])
 	g_pReader = matrix_reader_init (cFilename);
 	if (! g_pReader) // wrong file
 		exit (EXIT_FAILURE);
+
+	// open the ouput file if needed
+	if (cOutputFileName != NULL)
+	{
+		pOutputFile = fopen (cOutputFileName, "w");
+		if (pOutputFile == NULL)
+		{
+			fprintf (stderr, "Not able to use this output file: %s\n", cOutputFileName);
+			cOutputFileName = NULL; // to print to stdout
+		}
+	}
 
 	if (iThread > 1)
 	{
@@ -133,7 +149,10 @@ int main (int argc, char *argv[])
 		pMatrix = compute_all_matrix_in_one_thread (g_pReader);
 	}
 
-	matrix_print (pMatrix);
+	if (cOutputFileName == NULL)
+		matrix_print (pMatrix); // to stdout if no valid output file set
+	else
+		matrix_print_to_stream (pOutputFile, pMatrix);
 
 	// it's time to free
 	matrix_free (pMatrix);
