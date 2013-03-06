@@ -9,8 +9,10 @@ FILES= DLinkedList.o consumer.o producer.o matrix_reader.o compute_no_thread.o
 MATRIX= matrix.o
 MATRIX_PLAIN= matrix_plain.o
 
-all: $(OUT)
+all: $(OUT) $(PLAIN)
 	## You can launch the tests with: $ make run ##
+
+sparce: $(OUT)
 
 plain: $(PLAIN)
 
