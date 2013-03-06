@@ -49,4 +49,4 @@ run: $(OUT)
 .PHONY: clean
 
 clean:
-	@rm -f $(OUT) $(FILES)
+	@rm -f $(OUT) $(FILES) $(PLAIN) $(MATRIX) $(MATRIX_PLAIN)
