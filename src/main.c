@@ -152,7 +152,10 @@ int main (int argc, char *argv[])
 	if (cOutputFileName == NULL)
 		matrix_print (pMatrix); // to stdout if no valid output file set
 	else
+	{
 		matrix_print_to_stream (pOutputFile, pMatrix);
+		fclose (pOutputFile);
+	}
 
 	// it's time to free
 	matrix_free (pMatrix);
