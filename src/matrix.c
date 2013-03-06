@@ -373,7 +373,7 @@ MatrixState matrix_get_state (matrix_t *m)
 	return m->bState;
 }
 
-void matrix_print (matrix_t *m)
+void matrix_print_to_stream (FILE *stream, matrix_t *m)
 {
 	IF_ERROR_MATRIX (m);
 
@@ -394,13 +394,13 @@ void matrix_print (matrix_t *m)
 		{
 			if (pNode && pNode->iCol == iCol) // this elem exists
 			{
-				printf ("%d ", pNode->iData);
+				fprintf (stream, "%d ", pNode->iData);
 				pNode = pNode->pNextRight;
 			}
 			else
-				printf ("0 ");
+				fprintf (stream, "0 ");
 		}
-		printf ("\n");
+		fprintf (stream, "\n");
 	}
 }
 

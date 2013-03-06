@@ -30,6 +30,8 @@
 #ifndef __MATRIX_H__
 #define __MATRIX_H__
 
+#include <stdio.h>
+
 
 typedef enum _MatrixState {
 	MATRIX_BUSY=0,
@@ -70,9 +72,14 @@ void matrix_set_state (matrix_t *m, MatrixState state);
 MatrixState matrix_get_state (matrix_t *m);
 
 /**
+ * Print to stream the matrix
+ */
+void matrix_print_to_stream (FILE *stream, matrix_t *m);
+
+/**
  * Print to stdout the matrix
  */
-void matrix_print (matrix_t *m);
+#define matrix_print(m) matrix_print_to_stream (stdout, m)
 
 /**
  * An easy way to do the matricial product between two matrix
