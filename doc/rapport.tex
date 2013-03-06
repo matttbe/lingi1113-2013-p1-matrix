@@ -1,0 +1,101 @@
+\documentclass[a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[frenchb]{babel}
+\usepackage{amsmath} % math
+\usepackage{amssymb} % math
+\usepackage{gensymb} % math
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{url}
+    \urlstyle{sf}
+\usepackage[usenames]{color}
+\usepackage{array}
+%\usepackage{etex} % chimie
+%\usepackage{m-pictex} % chimie
+%\usepackage{m-ch-en} % chimie
+%\usepackage{lipsum}% pour mettre du texte aléatoire via \lipsum
+\definecolor{codeBlue}{rgb}{0,0,1}
+\definecolor{webred}{rgb}{0.5,0,0}
+\definecolor{codeGreen}{rgb}{0,0.5,0}
+\definecolor{codeGrey}{rgb}{0.6,0.6,0.6}
+\definecolor{webdarkblue}{rgb}{0,0,0.4}
+\definecolor{webgreen}{rgb}{0,0.3,0}
+\definecolor{webblue}{rgb}{0,0,0.8}
+\definecolor{orange}{rgb}{0.7,0.1,0.1}
+\usepackage{caption}
+\renewcommand{\familydefault}{\sfdefault}
+\date{\today} %\today
+%\institute{Cairo-Dock}
+\usepackage{listings}        % Pour l'insersion de fichiers de codes sources.
+\lstset{
+      language=C,
+      flexiblecolumns=true,
+      numbers=left,
+      stepnumber=1,
+      numberstyle=\ttfamily\tiny,
+      keywordstyle=\ttfamily\textcolor{blue},
+      stringstyle=\ttfamily\textcolor{red},
+      commentstyle=\ttfamily\textcolor{green},
+      breaklines=true,
+      extendedchars=true,
+      basicstyle=\ttfamily\scriptsize,
+      showstringspaces=false
+    }
+\title{\texttt{LING1113}: Projet 1 : Multiplication de matrices creuses}
+\author{\textsc{Matthieu Baerts} \& \textsc{Hélène Verhaeghe}\\Groupe 21}
+\begin{document}
+\maketitle
+% \tableofcontents
+
+\section{Performances du programme}
+Afin de comparer les performances de notre programme avec une implémentation triviale de matrices pleines (avec un tableau à deux dimensions), nous fournissons avec notre code les deux implémentations. Le premier se trouve dans \texttt{matrix.c} et le deuxième dans \texttt{matrix\_plain.c}. Concernant les exécutables, lors de l'utilisation de la commande \texttt{make}, deux binaires seront produits: \texttt{matrixprod} et \texttt{matrixprod\_plain}.
+
+\subsection{Mesures réalisées}
+Voici plusieurs mesures réalisées avec plusieurs matrices allant de 90 à 100 éléments par colonnes et lignes. Dans ces tableaux, nous retrouvons à chaque fois, dans la première colonne, le temps d'exécution pour l'implémentation des matrices creuses et dans la seconde, celle pour les matrices pleines.
+
+\begin{table}[H]
+    \caption{Creuses à environ 90\%}
+    \label{tab:10}
+    \begin{center}
+        \begin{tabular}{cc}
+             & \\
+             & \\
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{table}[H]
+    \caption{Creuses à environ 95\%}
+    \label{tab:}
+    \begin{center}
+        \begin{tabular}{cc}
+             & \\
+             & \\
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{table}[H]
+    \caption{Creuses à environ 99\%}
+    \label{tab:}
+    \begin{center}
+        \begin{tabular}{cc}
+             & \\
+             & \\
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{figure}[H]
+    \begin{center}
+        %\includegraphics{}
+        \caption{Représentation graphique des données venant des 3 tableaux précédents}
+        \label{fig:time}
+    \end{center}
+\end{figure}
+La représentation graphique se trouve dans la figure \ref{fig:time}.
+
+\section{Utilité de l'implémentation de matrices creuses}
+
+\end{document}

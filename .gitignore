@@ -1,2 +1,9 @@
 *.o
 matrixprod*
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.pdf
+*.synctex.gz
+gen
